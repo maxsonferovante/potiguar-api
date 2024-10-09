@@ -20,11 +20,11 @@ class PotiguarLookupService:
         self.api = config_auth["api"]
         self.referer = config_recaptcha["site_url"]
               
-    async def login(self):
+    async def login(self, new_token: bool = False):
         
         is_token_valid = TokenManager.is_token_valid()
         
-        if is_token_valid:
+        if is_token_valid and not new_token:
             return TokenManager.get_token()
         
         recaptcha = await self.recaptcha_service.get_recaptcha()
@@ -39,7 +39,11 @@ class PotiguarLookupService:
         async with httpx.AsyncClient() as client:
             response = await client.post(f"{self.api}/auth/login", json=data, headers=headers, timeout=30)
             
-            if response.status_code != 200:
+            if response.status_code == 400:
+                # {'success': False, 'data': ['Login ou senha inválidos']}
+                print ("Failed to login: {} - {}".format(response.status_code, response.json()))
+            elif response.status_code != 200:
+                print ("Failed to login: {} - {}".format(response.status_code, response.json()))
                 raise Exception("Failed to login")
             
             bearer_token = response.json().get("data")
@@ -50,31 +54,38 @@ class PotiguarLookupService:
     
     
     async def get_vehicle_data(self, order: Dict):
+        new_token = False
         
-        bearer_token = await self.login()
-        
-        recaptcha = await self.recaptcha_service.get_recaptcha()
-        
-        if not recaptcha:
-            raise Exception("Failed to get recaptcha")
-        # payload = {
-        #    "placa": "rgg0e83",
-        #    "renavam": " 1260720184"
-        # }
-        payload = {
-            "placa": order["license_plate"],
-            "renavam": order["renavam"]
-        }
-        headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{self.api}/consultaveiculo/obtemdadosveiculo", json=payload, headers=headers, timeout=30)
-            
-            if response.status_code != 200:
-                raise Exception("Failed to get vehicle data")
-            
-            return response.json()["data"]
-    
+        for attempt in range(3):
+            try:        
+                bearer_token = await self.login(new_token=new_token)
+                
+                recaptcha = await self.recaptcha_service.get_recaptcha()
+                
+                if not recaptcha:
+                    raise Exception("Failed to get recaptcha")
+                # payload = {
+                #    "placa": "rgg0e83",
+                #    "renavam": " 1260720184"
+                # }
+                payload = {
+                    "placa": order["license_plate"],
+                    "renavam": order["renavam"]
+                }
+                headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
+                
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(f"{self.api}/consultaveiculo/obtemdadosveiculo", json=payload, headers=headers, timeout=30)
+                    
+                    if response.status_code == 400:
+                        print("Failed to get vehicle data: status: {} - {}".format(response.status_code, response.json()))
+                        new_token = True
+                    elif response.status_code != 200:
+                        raise Exception("Failed to get vehicle data: status: {} - {}".format(response.status_code, response.json()))
+                    
+                    return response.json()["data"]
+            except Exception as e:
+                raise e
     async def obtain_vehicle_debts(self, vehicle_data: Dict):
         
         recaptcha = await self.recaptcha_service.get_recaptcha()
