@@ -14,3 +14,16 @@ config = OdmProvider(
     },
     document_models=[Order],
 )
+
+config_recaptcha = {
+    "key": os.getenv("RECAPTCHA_KEY", "RECAPTCHA_KEY"),
+    "site_url": os.getenv("SITE_URL", "https://www.google.com"),
+    "site_key": os.getenv("SITE_KEY", "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_kl-"),
+    "url_captcha": os.getenv("URL_CAPTCHA", "https://api.capsolver.com"),
+}
+
+config_auth = {
+    "username": os.getenv("AUTH_USERNAME", "admin"),    
+    "password": os.getenv("AUTH_PASSWORD", "admin"),    
+    "api": os.getenv("API_RN", "https://api.rn.gov.br"),
+}
