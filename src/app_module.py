@@ -3,11 +3,9 @@ from .config import config
 from .app_controller import AppController
 from .app_service import AppService
 from src.apps.order.order_module import OrderModule
-from src.apps.detran_rn_crawler.detran_rn_crawler_module import DetranRnCrawlerModule
-
 
 @Module(
-    imports=[OrderModule, DetranRnCrawlerModule],
+    imports=[OrderModule],
     controllers=[AppController],
     providers=[AppService],
 )
