@@ -22,3 +22,14 @@ class Order(Document):
                 "result": "any"
             }
         }
+
+
+def transform_Document_to_Order(document: Document) -> Order:
+    return Order(
+        identifier=document.identifier,
+        status=document.status,
+        license_plate=document.license_plate,
+        renavam=document.renavam,
+        created_at=document.created_at,
+        result=document.result
+    )
