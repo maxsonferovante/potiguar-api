@@ -22,14 +22,14 @@ class RecaptchaService:
                 "clientKey": self.client_key,
                 "task": self.task
             }
+            print ("Payload", payload)
             response = await client.post(f"{self.url_captcha}/createTask", json=payload, timeout=30)
             task_id = response.json().get("taskId")
             if not task_id:
                 raise Exception("Failed to create task")
             while True:
                 await asyncio.sleep(1)
-                payload = {"clientKey": self.client_key, "taskId": task_id}
-                response = await client.post(f"{self.url_captcha}/getTaskResult", json=payload, timeout=30)
+                response = await client.post(f"{self.url_captcha}/getTaskResult", json={"clientKey": self.client_key, "taskId": task_id}, timeout=30)
                 status = response.json().get("status")
                 if status == "ready":
                     return response.json().get("solution", {}).get('gRecaptchaResponse')
