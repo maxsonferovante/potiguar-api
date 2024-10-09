@@ -20,12 +20,12 @@ class Order(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now, init=False) 
     result: Optional[Dict] = {}
 
-class OrderDTO(BaseModel):
+class OrderCreateDTO(BaseModel):
     license_plate: str
     renavam: str
 
 
-def transform_orderDTO_to_order(order: OrderDTO) -> OrderDTO:
+def transform_OrderCreateDTO_to_order(order: OrderCreateDTO) -> OrderCreateDTO:
     return Order(
         license_plate=order.license_plate,
         renavam=order.renavam

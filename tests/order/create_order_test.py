@@ -1,28 +1,28 @@
 import pytest
 from pydantic import ValidationError
-from src.apps.order.order_model import OrderDTO, Order, transform_orderDTO_to_order
+from src.apps.order.order_model import OrderCreateDTO, Order, transform_OrderCreateDTO_to_order
 
 
-class TestOrderDTO:
+class TestOrderCreateDTO:
     
-    def create_orderDTO(self):
-        orderDTO = OrderDTO(license_plate="ABC1234", renavam="123456789")
-        assert orderDTO.license_plate == "ABC1234"
-        assert orderDTO.renavam == "123456789"
+    def create_OrderCreateDTO(self):
+        OrderCreateDTO = OrderCreateDTO(license_plate="ABC1234", renavam="123456789")
+        assert OrderCreateDTO.license_plate == "ABC1234"
+        assert OrderCreateDTO.renavam == "123456789"
 
     # não enviar os campos obrigatórios
-    def test_create_orderDTO_with_none(self):
+    def test_create_OrderCreateDTO_with_none(self):
         with pytest.raises(ValidationError):
-            OrderDTO()
+            OrderCreateDTO()
     
-    def test_create_orderDTO_with_invalid(self):
+    def test_create_OrderCreateDTO_with_invalid(self):
         with pytest.raises(ValidationError):
-            OrderDTO(invalid_field="invalid_value")
+            OrderCreateDTO(invalid_field="invalid_value")
             
                
-    def test_transform_orderDTO_to_order(self):
-        orderDTO = OrderDTO(license_plate="ABC1234", renavam="123456789")
-        order = transform_orderDTO_to_order(orderDTO)
+    def test_transform_OrderCreateDTO_to_order(self):
+        OrderCreateDTO = OrderCreateDTO(license_plate="ABC1234", renavam="123456789")
+        order = transform_OrderCreateDTO_to_order(OrderCreateDTO)
         assert order.license_plate == "ABC1234"
         assert order.renavam == "123456789"
         assert order.status == "PENDING"
@@ -30,9 +30,9 @@ class TestOrderDTO:
         assert order.identifier
         assert order is not None
 
-    def test_transform_orderDTO_to_order_with_none(self):
-        orderDTO = OrderDTO(license_plate="ABC1234",renavam="123456789")
-        order = transform_orderDTO_to_order(orderDTO)
+    def test_transform_OrderCreateDTO_to_order_with_none(self):
+        OrderCreateDTO = OrderCreateDTO(license_plate="ABC1234",renavam="123456789")
+        order = transform_OrderCreateDTO_to_order(OrderCreateDTO)
         assert order.license_plate == "ABC1234"
         assert order.renavam == "123456789"
         assert order.status == "PENDING"

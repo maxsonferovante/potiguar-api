@@ -1,7 +1,7 @@
 from nest.core import Controller, Get, Post
 
 from .order_service import OrderService
-from .order_model import OrderDTO, Order
+from .order_model import OrderCreateDTO, Order
 
 
 @Controller("order")
@@ -15,6 +15,6 @@ class OrderController:
         return await self.order_service.get_order()
 
     @Post("/")
-    async def add_order(self, order: OrderDTO) -> Order:
+    async def add_order(self, order: OrderCreateDTO) -> Order:
         return await self.order_service.add_order(order)
  

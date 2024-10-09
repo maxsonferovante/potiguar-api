@@ -1,4 +1,4 @@
-from .order_model import Order, OrderDTO, transform_orderDTO_to_order
+from .order_model import Order, OrderCreateDTO, transform_OrderCreateDTO_to_order
 from .order_entity import Order as OrderEntity
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
@@ -8,9 +8,9 @@ from nest.core import Injectable
 class OrderService:
 
     @db_request_handler
-    async def add_order(self, order: OrderDTO) -> Order:
+    async def add_order(self, order: OrderCreateDTO) -> Order:
         
-        orderModel = transform_orderDTO_to_order(order)
+        orderModel = transform_OrderCreateDTO_to_order(order)
         new_order = OrderEntity(**orderModel.dict())
         await new_order.save()
         return orderModel
