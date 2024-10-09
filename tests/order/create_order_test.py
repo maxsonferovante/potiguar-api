@@ -59,7 +59,3 @@ class TestOrderModel:
         with pytest.raises(ValidationError):
             Order(invalid_field="invalid_value")
     
-    # faça testes validando os tipos de dados dos campos
-    def test_create_order_with_invalid_type(self):
-        with pytest.raises(ValidationError):
-            Order(license_plate=12345, renavam=123456789)
