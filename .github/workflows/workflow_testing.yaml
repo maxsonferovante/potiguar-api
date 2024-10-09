@@ -11,7 +11,7 @@ jobs:
  continuos-integration:
     name: Continuos Integration - Testing and Deploy
     runs-on: ubuntu-latest
-    environment: potiguar-api
+    environment: potiguar-api-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
