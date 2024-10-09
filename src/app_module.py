@@ -3,11 +3,11 @@ from .config import config
 from .app_controller import AppController
 from .app_service import AppService
 from src.apps.order.order_module import OrderModule
-from src.apps.detran_rn_crawler.detran_rn_crawler_module import DetranRnCrawlerModule
+from src.apps.tasks.tasks_module import TasksModule
 
 
 @Module(
-    imports=[OrderModule, DetranRnCrawlerModule],
+    imports=[OrderModule, TasksModule],
     controllers=[AppController],
     providers=[AppService],
 )
@@ -21,7 +21,7 @@ app = PyNestFactory.create(
     title="PyNest Application",
     version="1.0.0",
     debug=True,
-    docs_url="/api/docs"
+    docs_url="/api/docs",
 )
 http_server = app.get_server()
 
