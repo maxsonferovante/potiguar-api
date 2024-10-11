@@ -26,6 +26,9 @@ python main.py
 uvicorn "src.app_module:http_server" --host "0.0.0.0" --port "8000" --reload
 ```
 
+poetry run celery -A src.apps.tasks.tasks_service worker --loglevel=INFO
+
+poetry run celery -A src.apps.tasks.tasks_service flower
 ## Step 3 - Send requests
 
 Go to the fastapi docs and use your api endpoints - http://127.0.0.1/docs
