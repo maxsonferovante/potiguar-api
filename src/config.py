@@ -27,3 +27,10 @@ config_auth = {
     "password": os.getenv("AUTH_PASSWORD", "admin"),    
     "api": os.getenv("API_RN", "https://api.rn.gov.br"),
 }
+
+config_redis = {
+    "host": os.getenv("REDIS_HOST", "localhost"),
+    "port": os.getenv("REDIS_PORT", 6379),
+    "password": os.getenv("REDIS_PASSWORD", ""),
+    "url": f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', 6379)}"
+}
