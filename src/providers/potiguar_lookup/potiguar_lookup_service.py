@@ -53,7 +53,7 @@ class PotiguarLookupService:
             return bearer_token
     
     
-    async def get_vehicle_data(self, order: Dict):
+    async def obtain_vehicle_data(self, license_plate: str, renavam: str):
         new_token = False
         
         for attempt in range(3):
@@ -69,8 +69,8 @@ class PotiguarLookupService:
                 #    "renavam": " 1260720184"
                 # }
                 payload = {
-                    "placa": order["license_plate"],
-                    "renavam": order["renavam"]
+                    "placa": license_plate,
+                    "renavam": renavam,
                 }
                 headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
                 
@@ -82,9 +82,10 @@ class PotiguarLookupService:
                         new_token = True
                     elif response.status_code != 200:
                         raise Exception("Failed to get vehicle data: status: {} - {}".format(response.status_code, response.json()))
-                    
-                    return response.json()["data"]
+                    else:
+                        return response.json()["data"]
             except Exception as e:
+                print('Error in obtain_vehicle_data: {}'.format(e))
                 raise e
     async def obtain_vehicle_debts(self, vehicle_data: Dict):
         
