@@ -15,9 +15,14 @@ class OrderController:
         try:
             return await self.order_service.get_order_by_identifier(identifier)
         except Exception as exception:
+            print ("Exception -- get_order_by_identifier", exception)
             handlers_order_expections(exception) 
 
     @Post("/")
     async def add_order(self, order: OrderCreateDTO) -> Order:
-        return await self.order_service.add_order(order)
+        try:
+            return await self.order_service.add_order(order)
+        except Exception as exception:
+            print ("Exception - add_order", exception)
+            handlers_order_expections(exception)
  

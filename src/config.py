@@ -18,7 +18,7 @@ config = OdmProvider(
 config_recaptcha = {
     "key": os.getenv("RECAPTCHA_KEY", "RECAPTCHA_KEY"),
     "site_url": os.getenv("SITE_URL", "https://www.google.com"),
-    "site_key": os.getenv("SITE_KEY", "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_kl-"),
+    "site_key": "6LdevPgfAAAAADYwit3dtW0Z5iC8K9_uzIHc-0Al",
     "url_captcha": os.getenv("URL_CAPTCHA", "https://api.capsolver.com"),
 }
 
@@ -26,4 +26,11 @@ config_auth = {
     "username": os.getenv("AUTH_USERNAME", "admin"),    
     "password": os.getenv("AUTH_PASSWORD", "admin"),    
     "api": os.getenv("API_RN", "https://api.rn.gov.br"),
+}
+
+config_redis = {
+    "host": os.getenv("REDIS_HOST", "localhost"),
+    "port": os.getenv("REDIS_PORT", 6379),
+    "password": os.getenv("REDIS_PASSWORD", ""),
+    "url": f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', 6379)}"
 }
