@@ -1,4 +1,18 @@
 services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portiguar-api
+    ports:
+      - "8000:8000"
+    networks:
+      - portiguar-network
+    depends_on:
+      - mongo
+      - redis
+  
   mongo:
     image: mongo
     restart: always
@@ -6,13 +20,31 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
   
-    
     ports:
       - 27017:27017
-
+    networks:
+      - portiguar-network
   redis:
     image: redis
     restart: always    
     ports:
       - 6379:6379
+
+    networks:
+      - portiguar-network
+
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: celery -A src.apps.tasks.tasks_service worker --loglevel=INFO
+    depends_on:
+      - redis
+      - api
+    networks:
+      - portiguar-network
+
+networks:
+  portiguar-network:
+    driver: bridge
+
     
