@@ -64,7 +64,7 @@ class OrderService:
         if not order:
             raise OrderNotFoundException(order_find.identifier)
         
-        if order.status == OrderStatus.COMPLETED:
+        if order.status == OrderStatus.COMPLETED or order.status == OrderStatus.FAILED:
             return transform_Document_to_Order(order)
         
         task_result = self.tasks_service.get_result_task(order.identifier)

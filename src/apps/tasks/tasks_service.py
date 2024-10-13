@@ -109,7 +109,7 @@ def get_vehicle_data(license_plate: str, renavam: str, identifier: str):
             redis.set(identifier, json.dumps({
             "status": "FAILURE",
             "tpye": type(exception).__name__,
-            "message": str(exception),
+            "message": "Service unavailable. Please try again in a few moments. If the problem persists, please contact the administrators.",
             "identifier": identifier
             }), ex=3600)
             send_email_alert.delay(
