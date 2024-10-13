@@ -33,7 +33,7 @@ celery_manager.conf.update(
 
 potiguar_lookup_service = PotiguarLookupService(RecaptchaService())
 
-AUTORETRY_FOR = (InternalServerErrorException, FaildCreateTaskException, FaildSolutionException)
+AUTORETRY_FOR = (InternalServerErrorException, FaildCreateTaskException, FaildSolutionException, LicensePlaceOrRenavamException)
 
 @Injectable
 class TasksService:
@@ -66,7 +66,7 @@ class TasksService:
             return None
 
         
-@celery_manager.task(name='get_vehicle_data',default_retry_delay= 10, autoretry_for=AUTORETRY_FOR, retry_kwargs={'max_retries': 3})
+@celery_manager.task(name='get_vehicle_data',default_retry_delay= 10, autoretry_for=AUTORETRY_FOR, retry_kwargs={'max_retries': 3, })
 def get_vehicle_data(license_plate: str, renavam: str, identifier: str):
     try:
         vehicle_data = asyncio.run(potiguar_lookup_service.obtain_vehicle_data(
@@ -94,33 +94,44 @@ def get_vehicle_data(license_plate: str, renavam: str, identifier: str):
     
     except Exception as exception:
         print ('get_vehicle_data exception: {}'.format(exception))
-        if isinstance(exception, AUTORETRY_FOR) and get_vehicle_data.request.retries < get_vehicle_data.request.max_retries:
-            raise exception        
-        elif isinstance(exception, AUTORETRY_FOR) and get_vehicle_data.request.retries == get_vehicle_data.request.max_retries:
-            redis.set(identifier, json.dumps({
-            "status": "FAILURE",
-            "tpye": type(exception).__name__,
-            "message": str(exception),
-            "identifier": identifier
-            }), ex=3600)
-            raise exception        
-        
+        if isinstance(exception, AUTORETRY_FOR) and get_vehicle_data.request.retries <3:
+            raise exception                        
+                                
         elif isinstance(exception, UserBlockedException):
-            redis.set(identifier, json.dumps({
+            
+            save_information_about_task.delay(identifier, {
             "status": "FAILURE",
             "tpye": type(exception).__name__,
-            "message": "Service unavailable. Please try again in a few moments. If the problem persists, please contact the administrators.",
+            "message": "Service unavailable. Please try again in a few moments. If the problem persists, please contact the administrator, providing the following identifier {} and type {}".format(identifier, type(exception).__name__),
             "identifier": identifier
-            }), ex=3600)
+            })            
+            
             send_email_alert.delay(
                 "User blocked: {}. Expection: {} Type: {}".format(identifier, str(exception),type(exception).__name__)
             )
+            
             raise exception
         else:
+            save_information_about_task.delay(identifier, {
+            "status": "FAILURE",
+            "tpye": type(exception).__name__,
+            "message": "An error occurred while processing your request. Please try again in a few moments. If the problem persists, please contact the administrators, providing the following identifier {} and type {}".format(identifier, type(exception).__name__),
+            "identifier": identifier
+            })
+            
             raise exception
         
         
-        
+@celery_manager.task(name='save_information_about_task')        
+def save_information_about_task(identifier:str, information: Dict):
+    print("Saving information: {}".format(information))
+    
+    redis.set(identifier, json.dumps(information), ex=3600)
+    
+    return {
+        "message": "Information saved",
+        "information": information
+    }
        
 
 @celery_manager.task(name='send_email_alert')

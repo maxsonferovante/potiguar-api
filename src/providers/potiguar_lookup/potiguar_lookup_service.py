@@ -146,22 +146,23 @@ class PotiguarLookupService:
             "CPF/CNPJ inválido.": UserBlockedException,
             "Placa e/ou Renavam incorretos, por favor verifique os dados!": LicensePlaceOrRenavamException,
             "Informe a placa do veículo": LicensePlaceOrRenavamException,
-            "Informe a placa do veículo.": LicensePlaceOrRenavamException
+            "Informe o renavam do veículo": LicensePlaceOrRenavamException
         }
          # Extrai a lista de mensagens do dicionário
         message_list = data.get("data")
         
         # Se não houver mensagens, retorna um erro genérico
+        
         if not message_list:
             raise InternalServerErrorException("Internal Server Error: No messages found in response")
         
         for message in message_list:
-            print('handler exception logs', message, data, message_list)
-            
+            matching_key =  next((key for key in error_map if key in message), None)    
+            print('handler exception logs', message, data, message_list, matching_key)
             # Verifica se a mensagem está no dicionário de erros
-            if message in error_map:
+            if matching_key:
                 # Lança a exceção mapeada
-                raise error_map[message](message)
+                raise error_map[matching_key](message)
             
         # Caso a mensagem não corresponda a nenhuma condição anterior, levanta uma exceção de erro interno         
         raise InternalServerErrorException("Internal Server Error: {}".format(message))
