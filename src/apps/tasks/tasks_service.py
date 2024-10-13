@@ -7,7 +7,7 @@ from nest.core import Injectable
 from src.providers.potiguar_lookup.potiguar_lookup_service import PotiguarLookupService
 from src.providers.recaptcha.recaptcha_service import RecaptchaService
 
-from src.providers.potiguar_lookup.potiguar_lookup_exception import LicensePlaceOrRenavamException, UserPasswordException, InternalServerErrorException
+from src.providers.potiguar_lookup.potiguar_lookup_exception import LicensePlaceOrRenavamException, UserPasswordException, InternalServerErrorException, UserBlockedException
 from src.providers.recaptcha.recaptcha_exception import FaildCreateTaskException, FaildSolutionException
 
 from src.config import config_redis
@@ -32,6 +32,8 @@ celery_manager.conf.update(
 )
 
 potiguar_lookup_service = PotiguarLookupService(RecaptchaService())
+
+AUTORETRY_FOR = (InternalServerErrorException, FaildCreateTaskException, FaildSolutionException)
 
 @Injectable
 class TasksService:
@@ -64,9 +66,7 @@ class TasksService:
             return None
 
         
-@celery_manager.task(name='get_vehicle_data',
-                     default_retry_delay= 15,
-                     autoretry_for=(Exception, InternalServerErrorException, FaildCreateTaskException, FaildSolutionException),)
+@celery_manager.task(name='get_vehicle_data',default_retry_delay= 10, autoretry_for=AUTORETRY_FOR, retry_kwargs={'max_retries': 3})
 def get_vehicle_data(license_plate: str, renavam: str, identifier: str):
     try:
         vehicle_data = asyncio.run(potiguar_lookup_service.obtain_vehicle_data(
@@ -92,26 +92,40 @@ def get_vehicle_data(license_plate: str, renavam: str, identifier: str):
         
         return result
     
-    except LicensePlaceOrRenavamException as e:
-        raise e
-    except UserPasswordException as e:
-        # aqui seria interessante enviar um email para o administrador do sistema
-        print ("UserPasswordException: {}".format(e))
-        
-        # salvar no redis como falha 
-        redis.set(identifier, json.dumps({
+    except Exception as exception:
+        print ('get_vehicle_data exception: {}'.format(exception))
+        if isinstance(exception, AUTORETRY_FOR) and get_vehicle_data.request.retries < get_vehicle_data.request.max_retries:
+            raise exception        
+        elif isinstance(exception, AUTORETRY_FOR) and get_vehicle_data.request.retries == get_vehicle_data.request.max_retries:
+            redis.set(identifier, json.dumps({
             "status": "FAILURE",
-            "message": str(e),
+            "tpye": type(exception).__name__,
+            "message": str(exception),
             "identifier": identifier
-        }), ex=3600)
-        raise e
-    except InternalServerErrorException as e:
-        raise e
-    except FaildCreateTaskException as e:
-        raise e
-    except FaildSolutionException as e:
-        raise e
-    except Exception as e:
-        raise e
-         
+            }), ex=3600)
+            raise exception        
+        
+        elif isinstance(exception, UserBlockedException):
+            redis.set(identifier, json.dumps({
+            "status": "FAILURE",
+            "tpye": type(exception).__name__,
+            "message": str(exception),
+            "identifier": identifier
+            }), ex=3600)
+            send_email_alert.delay(
+                "User blocked: {}. Expection: {} Type: {}".format(identifier, str(exception),type(exception).__name__)
+            )
+            raise exception
+        else:
+            raise exception
+        
+        
+        
        
+
+@celery_manager.task(name='send_email_alert')
+def send_email_alert(alert: str):
+    print("Sending email alert: {}".format(alert))
+    return {
+        "message": "Email sent"
+    }
