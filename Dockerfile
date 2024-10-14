@@ -28,4 +28,4 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 EXPOSE 8000
 
-ENTRYPOINT ["uvicorn", "src.app_module:http_server", "--reload"]
+ENTRYPOINT ["poetry", "run","uvicorn", "src.app_module:http_server", "--port", "8000", "--reload"]
