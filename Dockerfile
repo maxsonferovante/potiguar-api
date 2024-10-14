@@ -15,7 +15,7 @@ POETRY_CACHE_DIR=/tmp/poetry_cache
 COPY . .
 
 # Instala as dependências do projeto usando o Poetry
-RUN poetry install --without dev --no-root
+RUN poetry install
 
 
 FROM python:3.12-slim as runtime
