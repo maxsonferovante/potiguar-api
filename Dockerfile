@@ -1,6 +1,9 @@
 #Use a imagem base do Python
 FROM python:3.12 as builder
 
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
 # Instala o Poetry
 RUN pip install poetry==1.8.3
 
@@ -9,11 +12,7 @@ POETRY_VIRTUALENVS_IN_PROJECT=1 \
 POETRY_VIRTUALENVS_CREATE=1 \
 POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Define o diretório de trabalho dentro do container
-WORKDIR /app
-
-# Copia o arquivo de definição de dependências (pyproject.toml) e o arquivo de bloqueio de dependências (poetry.lock) para o diretório de trabalho
-COPY pyproject.toml poetry.lock ./app/
+COPY . .
 
 # Instala as dependências do projeto usando o Poetry
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
@@ -26,7 +25,6 @@ ENV VIRTUAL_ENV=/app/.venv \
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY . .
 
 EXPOSE 8000
 
