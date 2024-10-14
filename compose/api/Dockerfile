@@ -11,7 +11,7 @@ COPY pyproject.toml poetry.lock /app/
 RUN pip install poetry
 
 # Instala as dependências do projeto usando o Poetry
-RUN poetry install --no-root --no-dev
+RUN poetry install
 # Copia o restante do código fonte para o diretório de trabalho
 
 COPY . .
@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 8000
 # Define o comando padrão para executar a aplicação
 
-CMD ["poetry", "run", "python", "main.py"]
+CMD ["sleep", "5", ";", "poetry", "run", "python", "main.py"]
