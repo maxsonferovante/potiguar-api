@@ -32,5 +32,5 @@ config_redis = {
     "host": os.getenv("REDIS_HOST", "localhost"),
     "port": os.getenv("REDIS_PORT", 6379),
     "password": os.getenv("REDIS_PASSWORD", ""),
-    "url": f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', 6379)}"
+    "url": os.getenv("REDIS_URL", "redis://localhost:6379/0"),
 }
