@@ -28,4 +28,4 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 EXPOSE 8000
 
-ENTRYPOINT ["poetry", "run", "python", "main.py"]
+ENTRYPOINT ["uvicorn", "src.app_module:http_server", "--host", "0.0.0.0", "--port", "8000", "--reload"]
