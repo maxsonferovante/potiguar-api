@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./compose/api/Dockerfile
+      dockerfile: Dockerfile
     container_name: portiguar-api
     ports:
       - "8000:8000"
@@ -33,16 +33,6 @@ services:
     ports:
       - 6379:6379
 
-    networks:
-      - portiguar-network
-
-  celery_worker:
-    build: 
-      context: .
-      dockerfile: ./compose/worker/Dockerfile
-    container_name: celery_worker
-    depends_on:
-      - redis
     networks:
       - portiguar-network
 
