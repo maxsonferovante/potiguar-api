@@ -1,10 +1,8 @@
 #Use a imagem base do Python
 FROM python:3.12 AS builder
 
-# Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Instala o Poetry
 RUN pip install poetry==1.8.3
 
 ENV POETRY_NO_INTERACTION=1 \
@@ -14,9 +12,7 @@ POETRY_CACHE_DIR=/tmp/poetry_cache
 
 COPY pyproject.toml poetry.lock ./
 
-# Instala as dependências do projeto usando o Poetry
 RUN poetry install
-
 
 FROM python:3.12-slim AS runtime
 
@@ -27,9 +23,6 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY . .
 
-# RUN pip install poetry==1.8.3
-
 EXPOSE 8000
 
-# CMD ["poetry", "run", "main.py"]
 CMD ["uvicorn", "src.app_module:http_server", "--host", "0.0.0.0", "--port", "8000", "--reload"]
