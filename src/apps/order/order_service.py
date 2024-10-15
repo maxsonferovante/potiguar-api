@@ -103,4 +103,7 @@ class OrderService:
             raise OrderNotFoundException(order_find.identifier)
         
         await order.delete()
-        return transform_Document_to_Order(order)
+        return {
+            "message": "Order deleted successfully",
+            "identifier": order_find.identifier
+        }
