@@ -1,4 +1,4 @@
-from nest.core import Controller, Get, Post
+from nest.core import Controller, Get, Post, Delete
 from .order_service import OrderService
 from .order_model import OrderCreateDTO, Order, OrderFindDTO
 from .exceptions.handlers_order_expections import handlers_order_expections
@@ -25,4 +25,12 @@ class OrderController:
         except Exception as exception:
             print ("Exception - add_order", exception)
             handlers_order_expections(exception)
- 
+    
+    @Delete("/delete")
+    async def delete_order(self, order: OrderFindDTO) -> Order:
+        try:
+            return await self.order_service.delete_order(order)
+        except Exception as exception:
+            print ("Exception - delete_order", exception)
+            handlers_order_expections(exception)
+    
