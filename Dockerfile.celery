@@ -33,4 +33,5 @@ USER  appuser
 # EXPOSE 8000
 
 # CMD ["uvicorn", "src.app_module:http_server", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-CMD ["celery", "-A", "src.apps.tasks.tasks_service", "worker", "--loglevel=INFO"]
+# celery -A akashi worker --loglevel=DEBUG -E --concurrency 1
+CMD ["celery", "-A", "src.apps.tasks.tasks_service", "worker", "--loglevel=INFO", "-E", "--concurrency", "1"]
