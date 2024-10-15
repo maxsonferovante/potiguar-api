@@ -12,7 +12,7 @@ services:
     depends_on:
       - mongo
       - redis
-      - celery_worker
+      # - celery_worker
   
   mongo:
     image: mongo

@@ -1,5 +1,5 @@
 #Use a imagem base do Python
-FROM python:3.12 as builder
+FROM python:3.12 AS builder
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
@@ -12,20 +12,24 @@ POETRY_VIRTUALENVS_IN_PROJECT=1 \
 POETRY_VIRTUALENVS_CREATE=1 \
 POETRY_CACHE_DIR=/tmp/poetry_cache
 
-COPY . .
+COPY pyproject.toml poetry.lock ./
 
 # Instala as dependências do projeto usando o Poetry
 RUN poetry install
 
 
-FROM python:3.12-slim as runtime
+FROM python:3.12-slim AS runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
+COPY . .
+
+# RUN pip install poetry==1.8.3
 
 EXPOSE 8000
 
-ENTRYPOINT ["uvicorn", "src.app_module:http_server", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# CMD ["poetry", "run", "main.py"]
+CMD ["uvicorn", "src.app_module:http_server", "--host", "0.0.0.0", "--port", "8000", "--reload"]
