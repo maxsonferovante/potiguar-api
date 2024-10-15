@@ -12,8 +12,16 @@ from src.providers.recaptcha.recaptcha_exception import FaildCreateTaskException
 
 from src.config import config_redis
 
-print("config_redis: {}".format(config_redis))
-redis = redis.Redis.from_url(url=config_redis['url'], ssl=True, ssl_cert_reqs='CERT_REQUIRED')
+
+
+redis = redis.Redis(
+    host=config_redis['host'],
+    port=config_redis['port'],
+    password=config_redis['password'],
+    ssl=True,
+)
+
+print ('redis.ping():', redis.ping())
 
 celery_manager = Celery(
     'tasks',
@@ -23,11 +31,7 @@ celery_manager = Celery(
 
 
 celery_manager.conf.update(
-    broker_use_ssl={
-        'ssl_cert_reqs': 'CERT_REQUIRED'
-        },
-    backend_use_ssl={
-        'ssl_cert_reqs': 'CERT_REQUIRED'},
+
     visibility_timeout=3600,
     task_serializer='json',
     accept_content=['json'],
