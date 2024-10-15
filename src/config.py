@@ -29,6 +29,7 @@ config_auth = {
 }
 
 config_redis = {
+    "username": os.getenv("REDIS_USER", ""),
     "host": os.getenv("REDIS_HOST", "localhost"),
     "port": os.getenv("REDIS_PORT", 6379),
     "password": os.getenv("REDIS_PASSWORD", ""),

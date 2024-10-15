@@ -16,7 +16,7 @@ from src.config import config_redis
 
 celery_manager = Celery(
     'tasks',
-    broker=config_redis['url'],
+    broker='',
     backend=config_redis['url']
 )
 
