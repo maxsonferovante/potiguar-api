@@ -20,7 +20,7 @@ celery_manager = Celery(
     backend=config_redis['url']
 )
 
-redis = redis.Redis(host=config_redis['host'], port=config_redis['port'])
+redis = redis.Redis(unix_socket_path=config_redis['url'],)
 
 celery_manager.conf.update(
     visibility_timeout=3600,
