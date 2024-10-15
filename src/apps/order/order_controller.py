@@ -26,10 +26,10 @@ class OrderController:
             print ("Exception - add_order", exception)
             handlers_order_expections(exception)
     
-    @Delete("/delete")
-    async def delete_order(self, order: OrderFindDTO) -> Order:
+    @Delete("/{identifier}")
+    async def delete_order(self, identifier: str) -> Order:
         try:
-            return await self.order_service.delete_order(order)
+            return await self.order_service.delete_order(identifier)
         except Exception as exception:
             print ("Exception - delete_order", exception)
             handlers_order_expections(exception)
