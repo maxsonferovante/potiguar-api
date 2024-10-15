@@ -16,11 +16,11 @@ from src.config import config_redis
 
 celery_manager = Celery(
     'tasks',
-    broker='',
-    backend=config_redis['url']
+    broker=config_redis['url'],
+    backend=config_redis['url'],
 )
 
-redis = redis.Redis(unix_socket_path=config_redis['url'],)
+redis = redis.Redis(unix_socket_path=config_redis['url'], ssl=True)
 
 celery_manager.conf.update(
     visibility_timeout=3600,
