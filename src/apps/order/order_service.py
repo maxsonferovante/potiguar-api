@@ -95,7 +95,7 @@ class OrderService:
 
     
     @db_request_handler
-    async def delete_order(self, order: OrderFindDTO) -> Order:
+    async def delete_order(self, identifier) -> Order:
         order_find = OrderFindDTO(identifier=identifier)      
         
         order = await OrderEntity.find_one(OrderEntity.identifier == order_find.identifier)
