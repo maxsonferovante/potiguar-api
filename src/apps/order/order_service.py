@@ -92,3 +92,15 @@ class OrderService:
             
         await order.save()
         return transform_Document_to_Order(order)
+
+    
+    @db_request_handler
+    async def delete_order(self, order: OrderFindDTO) -> Order:
+        order_find = OrderFindDTO(identifier=identifier)      
+        
+        order = await OrderEntity.find_one(OrderEntity.identifier == order_find.identifier)
+        if not order:
+            raise OrderNotFoundException(order_find.identifier)
+        
+        await order.delete()
+        return transform_Document_to_Order(order)

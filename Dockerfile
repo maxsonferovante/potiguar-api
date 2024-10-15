@@ -16,12 +16,19 @@ RUN poetry install
 
 FROM python:3.12-slim AS runtime
 
+RUN useradd --create-home --home-dir /home/appuser appuser
+
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY . .
+
+# Altere a propriedade dos arquivos para o novo usuário
+RUN chown -R appuser:appuser /app
+
+USER  appuser
 
 EXPOSE 8000
 
