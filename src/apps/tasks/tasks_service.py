@@ -18,6 +18,7 @@ celery_manager = Celery(
     'tasks',
     broker=config_redis['url'],
     backend=config_redis['url'],
+    ssl_cert_reqs=ssl.CERT_REQUIRED,  # ssl_cert_reqs=ssl.CERT_REQUIRED, # ssl_cert_reqs=ssl.CERT_NONE, # ssl_cert_reqs=ssl.CERT_OPTIONAL
 )
 
 redis = redis.Redis(unix_socket_path=config_redis['url'], ssl=True)
