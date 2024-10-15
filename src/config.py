@@ -35,3 +35,7 @@ config_redis = {
     "password": os.getenv("REDIS_PASSWORD", ""),
     "url": os.getenv("REDIS_URL", "redis://localhost:6379/0"),
 }
+
+config_proxy = {
+    "PROXY_URL": os.getenv("PROXY_URL", "proxy_list"),
+}

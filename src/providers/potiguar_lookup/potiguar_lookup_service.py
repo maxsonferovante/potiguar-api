@@ -1,5 +1,5 @@
 from nest.core import Injectable
-from src.config import config_auth, config_recaptcha
+from src.config import config_auth, config_recaptcha, config_proxy
 from src.providers.recaptcha.recaptcha_service import RecaptchaService
 from .token_manager import TokenManager
 from .potiguar_lookup_exception import LicensePlaceOrRenavamException, UserPasswordException, InternalServerErrorException, UserBlockedException
@@ -36,10 +36,13 @@ class PotiguarLookupService:
         }
         
         headers = self.build_headers({"tokencaptcha": recaptcha})
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{self.api}/auth/login", json=data, headers=headers, timeout=30)
+        async with httpx.AsyncClient(proxy=config_proxy['PROXY_URL']) as client:
+            response = await client.post(f"{self.api}/auth/login", 
+                                         json=data, 
+                                         headers=headers, 
+                                         timeout=30)
             
+            print ('response', response.json())
             if response.status_code != 200:
                 self.handler_expection(response.json())            
             
@@ -58,7 +61,7 @@ class PotiguarLookupService:
         
         headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
                 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(proxy=config_proxy['PROXY_URL']) as client:
             response = await client.post(f"{self.api}/consultaveiculo/obtemdadosveiculo", json={"placa": license_plate,"renavam": renavam,}, headers=headers, timeout=30)
                 
             if response.status_code != 200:
@@ -74,7 +77,7 @@ class PotiguarLookupService:
         
         headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
         
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(proxy=config_proxy['PROXY_URL']) as client:
             response = await client.post(f"{self.api}/consultaveiculo/obtemdebitosveiculo", json=vehicle_data, headers=headers, timeout=30)        
             if response.status_code != 200:
                 self.handler_expection(response.json())
@@ -87,7 +90,7 @@ class PotiguarLookupService:
                                            
             headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
     
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(proxy=config_proxy['PROXY_URL']) as client:
                 response = await client.post(f"{self.api}/consultaveiculo/obteminfracoesveiculo", json=vehicle_data, headers=headers, timeout=30)
                     
                 if response.status_code != 200:
@@ -102,7 +105,7 @@ class PotiguarLookupService:
                                            
             headers = self.build_headers({"tokencaptcha": recaptcha, "authentication": bearer_token})
     
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(proxy=config_proxy['PROXY_URL']) as client:
                 response = await client.post(f"{self.api}/consultaveiculo/obtemmultasveiculo", json=vehicle_data, headers=headers, timeout=30)
                         
                 if response.status_code != 200:
@@ -166,4 +169,4 @@ class PotiguarLookupService:
             
         # Caso a mensagem não corresponda a nenhuma condição anterior, levanta uma exceção de erro interno         
         raise InternalServerErrorException("Internal Server Error: {}".format(message))
-              
+            
