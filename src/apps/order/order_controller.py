@@ -27,7 +27,7 @@ class OrderController:
             handlers_order_expections(exception)
     
     @Delete("/{identifier}")
-    async def delete_order(self, identifier: str) -> Order:
+    async def delete_order(self, identifier: str):
         try:
             return await self.order_service.delete_order(identifier)
         except Exception as exception:
