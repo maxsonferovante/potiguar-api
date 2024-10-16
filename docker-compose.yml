@@ -45,7 +45,7 @@ services:
     depends_on:
       - mongo
       - redis
-    command: celery -A portiguar worker --loglevel=info -E --concurrency 2
+
 
 networks:
   portiguar-network:
