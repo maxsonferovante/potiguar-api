@@ -38,8 +38,7 @@ services:
 
   celery_worker:
     build:
-      context: Dockerfile.celery
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.celery
     container_name: portiguar-celery
     networks:
       - portiguar-network
