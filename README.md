@@ -1,46 +1,45 @@
 # Potiguar API
+A Potiguar API é um serviço projetado para facilitar a consulta de infrações de veículos, subsídios e multas no Rio Grande do Norte. Ela fornece uma maneira robusta e eficiente de acessar e gerenciar essas informações através de uma API bem estruturada.
 
-Potiguar API is a service designed to facilitate the consultation of vehicle infractions, subsidies, and fines in Rio Grande do Norte. It provides a robust and efficient way to access and manage this information through a well-structured API.
+## Funcionalidades
 
-## Features
+- **FastAPI**: Utiliza FastAPI para construir a API, garantindo alto desempenho e interfaces fáceis de usar.
+- **Celery**: Integra Celery para lidar com tarefas assíncronas, tornando-o adequado para processamento em segundo plano.
+- **Uvicorn**: Usa Uvicorn como o servidor ASGI para servir a aplicação FastAPI.
+- **Poetry**: Gerencia dependências e ambientes virtuais com Poetry, garantindo um ambiente consistente e reproduzível.
 
-- **FastAPI**: Utilizes FastAPI for building the API, ensuring high performance and easy-to-use interfaces.
-- **Celery**: Integrates Celery for handling asynchronous tasks, making it suitable for background processing.
-- **Uvicorn**: Uses Uvicorn as the ASGI server for serving the FastAPI application.
-- **Poetry**: Manages dependencies and virtual environments with Poetry, ensuring a consistent and reproducible environment.
-
-## Requirements
+## Requisitos
 
 - Python 3.12+
 - Poetry
-- Redis (for Celery backend)
+- Redis (para backend do Celery)
 - FastAPI
 - Uvicorn
 - Celery
 
-## Installation
+## Instalação
 
-Follow the steps below to set up and run the Potiguar API on your local machine .
+Siga os passos abaixo para configurar e executar a Potiguar API em sua máquina local.
 
-## Start Service
+## Iniciar Serviço
 
-## Step 1 - Create environment
+## Passo 1 - Criar ambiente
 
-- Install dependencies using Poetry:
+- Instale as dependências usando Poetry:
 
 ```bash
 poetry install
 ```
 
-## Step 2 - Start service locally
+## Passo 2 - Iniciar serviço localmente
 
-1. Run the service with Uvicorn:
+1. Execute o serviço com Uvicorn:
 
 ```bash
 uvicorn "src.app_module:http_server" --host "0.0.0.0" --port "8000" --reload
 ```
 
-2. Start Celery worker and Flower for monitoring:
+2. Inicie o worker do Celery e o Flower para monitoramento:
 
 ```bash
 poetry run celery -A src.apps.tasks.tasks_service worker --loglevel=INFO
@@ -50,11 +49,6 @@ poetry run celery -A src.apps.tasks.tasks_service worker --loglevel=INFO
 poetry run celery -A src.apps.tasks.tasks_service flower
 ```
 
+## Passo 3 - Enviar requisições
 
-
-## Step 3 - Send requests
-
-Go to the fastapi docs and use your api endpoints - http://127.0.0.1/api/docs
-
-
-```
+Vá para a documentação do FastAPI e use seus endpoints da API - http://127.0.0.1/api/docs
