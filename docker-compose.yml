@@ -12,7 +12,7 @@ services:
     depends_on:
       - mongo
       - redis
-      # - celery_worker
+      - celery_worker
   
   mongo:
     image: mongo
@@ -35,6 +35,17 @@ services:
 
     networks:
       - portiguar-network
+
+  celery_worker:
+    build:
+      dockerfile: Dockerfile.celery
+    container_name: portiguar-celery
+    networks:
+      - portiguar-network
+    depends_on:
+      - mongo
+      - redis
+
 
 networks:
   portiguar-network:
