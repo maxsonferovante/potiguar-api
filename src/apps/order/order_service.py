@@ -95,7 +95,7 @@ class OrderService:
 
     
     @db_request_handler
-    async def delete_order(self, identifier) -> Order:
+    async def delete_order(self, identifier):
         order_find = OrderFindDTO(identifier=identifier)      
         
         order = await OrderEntity.find_one(OrderEntity.identifier == order_find.identifier)
@@ -103,4 +103,7 @@ class OrderService:
             raise OrderNotFoundException(order_find.identifier)
         
         await order.delete()
-        return transform_Document_to_Order(order)
+        return {
+            "message": "Order deleted successfully",
+            "identifier": order_find.identifier
+        }

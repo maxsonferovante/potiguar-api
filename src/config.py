@@ -29,8 +29,13 @@ config_auth = {
 }
 
 config_redis = {
+    "username": os.getenv("REDIS_USER", ""),
     "host": os.getenv("REDIS_HOST", "localhost"),
     "port": os.getenv("REDIS_PORT", 6379),
     "password": os.getenv("REDIS_PASSWORD", ""),
     "url": os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+}
+
+config_proxy = {
+    "PROXY_URL": os.getenv("PROXY_URL", "proxy_list"),
 }

@@ -14,15 +14,24 @@ from src.config import config_redis
 
 
 
+redis = redis.Redis(
+    host=config_redis['host'],
+    port=config_redis['port'],
+    password=config_redis['password'],
+    ssl=True,
+)
+
+print ('redis.ping():', redis.ping())
+
 celery_manager = Celery(
     'tasks',
     broker=config_redis['url'],
-    backend=config_redis['url']
+    backend=config_redis['url'],
 )
 
-redis = redis.Redis(unix_socket_path=config_redis['url'],)
 
 celery_manager.conf.update(
+
     visibility_timeout=3600,
     task_serializer='json',
     accept_content=['json'],
